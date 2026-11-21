@@ -1,11 +1,14 @@
 # Charts: every script in charts/ reads results/ and writes to charts/out/.
-# `make publish-charts` copies them into the blog post and records which
-# commit of this repo produced them (charts/SOURCE_COMMIT in the post folder).
+# A script whose data is missing prints the modal command to produce it and is
+# skipped. `make publish-charts` copies the output into the blog post and records
+# which commit of this repo produced them (charts/SOURCE_COMMIT in the post folder).
+# Hand-drawn diagrams live in the blog repo, not here.
 
 BLOG ?= ../../basith/website/src/content/blog/overhead-bound-inference
 PY   ?= uv run python
 
-CHART_SCRIPTS := $(wildcard charts/*.py)
+# charts/_*.py are shared helpers, not charts.
+CHART_SCRIPTS := $(filter-out charts/_%,$(wildcard charts/*.py))
 
 .PHONY: charts publish-charts
 
