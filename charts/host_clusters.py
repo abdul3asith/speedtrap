@@ -43,14 +43,14 @@ def label(d: str) -> str:
 def draw(c):
     fig, ax = plt.subplots(figsize=(8, 4.8))
     rng = np.random.default_rng(0)  # fixed jitter, so reruns draw identical charts
-    colors = [c["accent"], c["warning"], c["baseline"]]
+    colors = [c["baseline"], c["accent"], c["muted"]]
     for i, d in enumerate(drivers):
         ys = [r["p50_ms"] for r in groups[d]]
         xs = i + rng.uniform(-0.12, 0.12, len(ys))
         ax.scatter(xs, ys, s=70, color=colors[i % len(colors)], edgecolors="none", alpha=0.9, zorder=3)
         m = medians[d]
-        ax.plot([i - 0.28, i + 0.28], [m, m], color=c["primary"], lw=2, zorder=4)
-        ax.text(i + 0.32, m, f"median {m:.0f} ms", va="center", fontsize=FONT_SIZE - 1,
+        ax.plot([i - 0.28, i + 0.28], [m, m], color=c["secondary"], lw=2, zorder=2)
+        ax.text(i + 0.32, m, f"median {m:.0f} ms", va="center", fontsize=FONT_SIZE,
                 color=c["primary"])
     ax.set_xticks(range(len(drivers)), [label(d) for d in drivers])
     ax.set_xlim(-0.6, len(drivers) - 0.1)

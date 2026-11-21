@@ -66,13 +66,13 @@ def draw(c):
         ax.set_ylim(0, 1)
         ax.set_yticks([])
         clean_axes(ax, c)
-        ax.set_xlabel("ms from the start of the action", color=c["muted"], fontsize=FONT_SIZE - 2)
-    ax1.add_patch(Rectangle((zoom_start, 0), ZOOM_MS, 1, fill=False, edgecolor=c["warning"], lw=1.5))
-    ax1.set_title(f"One action: {wall_ms:.0f} ms", loc="left", fontsize=13,
+        ax.set_xlabel("ms from the start of the action", color=c["muted"], fontsize=FONT_SIZE - 1)
+    ax1.add_patch(Rectangle((zoom_start, 0), ZOOM_MS, 1, fill=False, edgecolor=c["baseline"], lw=1.5))
+    ax1.set_title(f"One action: {wall_ms:.0f} ms", loc="left", fontsize=15,
                   fontweight="semibold", color=c["primary"], pad=6)
     ax1.text(1, 1.04, f"{len(ks)} kernels per action  ·  GPU busy {busy_frac:.0%} of the time",
              transform=ax1.transAxes, ha="right", va="bottom", fontsize=FONT_SIZE, color=c["secondary"])
-    ax2.set_title(f"Zoomed: {ZOOM_MS:g} ms (orange box above)", loc="left", fontsize=13,
+    ax2.set_title(f"Zoomed: {ZOOM_MS:g} ms (outlined above)", loc="left", fontsize=15,
                   fontweight="semibold", color=c["primary"], pad=6)
     return fig
 

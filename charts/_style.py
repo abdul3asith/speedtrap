@@ -2,9 +2,9 @@
 
 Colours are the blog's palette (abdulbasith site), not matplotlib defaults.
 Each chart is saved three ways:
-  <name>_light.svg, <name>_dark.svg  transparent, for the website (no title: the
-                                     post's prose and caption carry the takeaway)
-  <name>_linkedin.png                white background, dpi 200, with the title
+  <name>_light.svg, <name>_dark.svg  transparent, for the website (no title or
+                                     footnote: the post's caption carries them)
+  <name>_linkedin.png                white background, dpi 200, title and footnote
 Files starting with "_" are helpers, not chart scripts (the Makefile skips them).
 """
 
@@ -20,37 +20,40 @@ RESULTS = [pathlib.Path("results/speed"), pathlib.Path("results/logs")]
 POST_RUN = "first-run"
 OUT = pathlib.Path("charts/out")
 
+# Two element colours, as on the site: ink (near-black / off-white) for the
+# reference, maroon (the site accent) for the thing the chart is about.
 THEMES = {
     "light": {
         "primary": "#1b1a17",    # main text
         "secondary": "#4a4843",  # labels
         "muted": "#85827a",      # footnotes, ticks
-        "baseline": "#a8a49a",   # the "original" bar
-        "accent": "#2a78d6",     # site blue: the thing the chart is about
-        "warning": "#eb6834",    # site orange: slower / costs
+        "baseline": "#1b1a17",   # reference elements: site ink
+        "accent": "#9a3412",     # site maroon
         "axis": "#c3c0b5",
         "grid": "#e6e3da",
-        "tint": "#f4f2ec",       # highlighted table rows
+        "tint": "#f3e3d8",       # highlighted table rows: site accent-soft
     },
     "dark": {
         "primary": "#ebe7de",
         "secondary": "#b9b4a8",
         "muted": "#807b70",
-        "baseline": "#6b675f",
-        "accent": "#3987e5",
-        "warning": "#d95926",
+        "baseline": "#ebe7de",
+        "accent": "#f0a272",     # the site's dark-mode accent
         "axis": "#403d37",
         "grid": "#2c2a26",
-        "tint": "#1c1b18",
+        "tint": "#3a2519",
     },
 }
 # LinkedIn PNGs sit on white, so they use the light palette.
 THEMES["linkedin"] = THEMES["light"]
 
 FONT = ["Inter", "Inter Variable", "Helvetica Neue", "Helvetica", "Arial", "DejaVu Sans"]
-FONT_SIZE = 12
-TITLE_SIZE = 15
-FOOT_SIZE = 8.5
+FONT_SIZE = 14     # ticks and labels
+VALUE_SIZE = 16    # numbers on bars
+SUB_SIZE = 14      # panel subtitles ("2.0× memory")
+PANEL_SIZE = 15    # panel titles
+TITLE_SIZE = 17    # LinkedIn headline
+FOOT_SIZE = 11
 
 
 def load_rows(model: str | None = None) -> list[dict]:
@@ -133,7 +136,7 @@ def clean_axes(ax, c: dict, left: bool = False) -> None:
     ax.spines["left"].set_visible(left)
     ax.spines["left"].set_color(c["axis"])
     ax.spines["bottom"].set_color(c["axis"])
-    ax.tick_params(colors=c["secondary"], labelsize=FONT_SIZE - 1)
+    ax.tick_params(colors=c["secondary"], labelsize=FONT_SIZE)
 
 
 def render_all(name: str, draw, title: str, foot: str) -> list[pathlib.Path]:
@@ -147,8 +150,9 @@ def render_all(name: str, draw, title: str, foot: str) -> list[pathlib.Path]:
         c = THEMES[theme]
         with theme_rc():
             fig = draw(c)
-            fig.text(0.01, 0.005, foot, fontsize=FOOT_SIZE, color=c["muted"], ha="left", va="bottom")
-            if theme == "linkedin":
+            if theme == "linkedin":  # the website's figure caption replaces the footnote
+                fig.text(0.01, 0.005, foot, fontsize=FOOT_SIZE, color=c["muted"], ha="left",
+                         va="bottom", wrap=True)
                 fig.suptitle(title, x=0.01, ha="left", fontsize=TITLE_SIZE,
                              fontweight="bold", color=c["primary"])
                 fig.tight_layout(rect=(0, 0.05, 1, 0.93))

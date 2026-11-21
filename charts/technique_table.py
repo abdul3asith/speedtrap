@@ -72,13 +72,13 @@ with theme_rc():
         if t == "native":
             vs_color = c["primary"]
         else:
-            vs_color = c["accent"] if x > 1 else c["warning"]
+            vs_color = c["primary"] if x >= 1 else c["accent"]  # slower in maroon
         cells = [t, w, f"{p:.0f}", f"{m:.2f}", f"{x:.2f}×"]
         colors = [c["primary"], c["secondary"], c["primary"], c["primary"], vs_color]
         for cx, text, a, col in zip(col_x, cells, align, colors):
             ax.text(cx, y, text, ha=a, va="center",
                     fontsize=FONT_SIZE, color=col,
-                    fontweight="semibold" if col in (c["accent"], c["warning"]) else "normal",
+                    fontweight="semibold" if cx == col_x[-1] else "normal",
                     family="monospace" if a == "left" and cx == col_x[0] else None)
     faster = [t for t, _, _, _, x in rows if t != "native" and x >= 1.10]  # at least 10% faster counts
     title = ("None of these tricks made it meaningfully faster" if not faster

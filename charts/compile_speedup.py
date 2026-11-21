@@ -4,7 +4,9 @@ import statistics
 
 import matplotlib.pyplot as plt
 from _style import (
-    FONT_SIZE,
+    PANEL_SIZE,
+    SUB_SIZE,
+    VALUE_SIZE,
     clean_axes,
     footnote,
     load_rows,
@@ -51,23 +53,23 @@ def fmt_duration(seconds: float) -> str:
 def bars(ax, c, names, values, texts, colors, title, note):
     top = max(values)
     b = ax.bar(names, values, width=0.5, color=colors)
-    ax.set_ylim(0, top * 1.32)
+    ax.set_ylim(0, top * 1.45)
     ax.set_yticks([])
     clean_axes(ax, c)
     ax.tick_params(axis="x", length=0, pad=8)
-    ax.set_title(title, loc="left", fontsize=13, fontweight="semibold", color=c["primary"], pad=6)
+    ax.set_title(title, loc="left", fontsize=PANEL_SIZE, fontweight="semibold", color=c["primary"], pad=6)
     ax.text(0, 1.0, note, transform=ax.transAxes, ha="left", va="top",
-            fontsize=FONT_SIZE - 1, color=c["secondary"])
+            fontsize=SUB_SIZE, color=c["secondary"])
     for bar, v, t in zip(b, values, texts):
         ax.text(bar.get_x() + bar.get_width() / 2, v + top * 0.03, t, ha="center", va="bottom",
-                fontsize=FONT_SIZE, fontweight="semibold", color=c["primary"])
+                fontsize=VALUE_SIZE, fontweight="semibold", color=c["primary"])
 
 
 def draw(c):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8.5, 4.4))
     bars(ax1, c, labels, p50, [f"{v:.0f} ms" for v in p50], [c["baseline"], c["accent"]],
          "Time per action (p50)", f"{speedup:.1f}× faster")
-    bars(ax2, c, first_labels, first_s, [fmt_duration(v) for v in first_s], [c["baseline"], c["warning"]],
+    bars(ax2, c, first_labels, first_s, [fmt_duration(v) for v in first_s], [c["baseline"], c["accent"]],
          "First call (one-time startup)", "paid once per restart")
     return fig
 

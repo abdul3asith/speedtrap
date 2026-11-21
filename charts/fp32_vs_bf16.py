@@ -2,7 +2,9 @@
 
 import matplotlib.pyplot as plt
 from _style import (
-    FONT_SIZE,
+    PANEL_SIZE,
+    SUB_SIZE,
+    VALUE_SIZE,
     clean_axes,
     footnote,
     load_rows,
@@ -30,21 +32,21 @@ lat_ratio = latency_ms[1] / latency_ms[0]
 def panel(ax, c, values, title, unit, fmt, ratio):
     bars = ax.bar(formats, values, width=0.5, color=[c["baseline"], c["accent"]])
     top = max(values)
-    ax.set_ylim(0, top * 1.32)
+    ax.set_ylim(0, top * 1.45)
     ax.set_yticks([])
     clean_axes(ax, c)
     ax.tick_params(axis="x", length=0, pad=8)
-    ax.set_title(title, loc="left", fontsize=13, fontweight="semibold", color=c["primary"], pad=6)
+    ax.set_title(title, loc="left", fontsize=PANEL_SIZE, fontweight="semibold", color=c["primary"], pad=6)
     ax.text(0, 1.0, ratio, transform=ax.transAxes, ha="left", va="top",
-            fontsize=FONT_SIZE - 1, color=c["secondary"])
+            fontsize=SUB_SIZE, color=c["secondary"])
     for bar, v in zip(bars, values):
         ax.text(bar.get_x() + bar.get_width() / 2, v + top * 0.03, f"{v:{fmt}} {unit}",
-                ha="center", va="bottom", fontsize=FONT_SIZE, fontweight="semibold",
+                ha="center", va="bottom", fontsize=VALUE_SIZE, fontweight="semibold",
                 color=c["primary"])
 
 
 def draw(c):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8.5, 4.4))
     panel(ax1, c, memory_gb, "Peak GPU memory", "GB", ".2f", f"{mem_ratio:.1f}× memory")
     panel(ax2, c, latency_ms, "Time per action (p50)", "ms", ".0f", f"{lat_ratio:.2f}× time")
     return fig

@@ -40,7 +40,7 @@ def draw(c):
         ax.text(0.03, y, run, ha="left", va="center", color=c["primary"])
         ax.text(0.35, y, setting, ha="left", va="center", color=c["primary"])
         ax.text(0.97, y, f"{ms} ms", ha="right", va="center", fontweight="semibold",
-                color=c["accent"] if fast else (c["warning"] if setting == "8 cores" else c["primary"]))
+                color=c["accent"] if (setting == "8 cores" and not fast) else c["primary"])
     return fig
 
 
