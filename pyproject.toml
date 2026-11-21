@@ -5,6 +5,7 @@ description = "Speed and certified success benchmarks for VLAs"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "lerobot[smolvla]",
+    "matplotlib>=3.11.2",
     "modal>=1.6.4",
     "torchao>=0.18.0",
 ]
