@@ -101,10 +101,8 @@ def render(name: str) -> None:
             ax.patch.set_alpha(0)
         panel(ax1, c, memory_gb, "Peak GPU memory", "GB", ".2f", f"{mem_ratio:.1f}× memory")
         panel(ax2, c, latency_ms, "Time per action (p50)", "ms", ".0f", f"{lat_ratio:.2f}× time")
-        fig.suptitle("Doubling the precision doubled the memory, but not the time",
-                     x=0.02, ha="left", fontsize=15, fontweight="semibold", color=c["primary"])
         fig.text(0.02, 0.01, footnote, fontsize=8.5, color=c["muted"])
-        fig.tight_layout(rect=(0, 0.05, 1, 0.94))
+        fig.tight_layout(rect=(0, 0.05, 1, 1))
         OUT.mkdir(parents=True, exist_ok=True)
         for ext in ("png", "svg"):
             fig.savefig(OUT / f"fp32_vs_bf16_{name}.{ext}", bbox_inches="tight", transparent=True)
