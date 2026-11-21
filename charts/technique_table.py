@@ -12,7 +12,7 @@ from _style import (
     footnote,
     load_rows,
     missing,
-    newest_complete_run,
+    post_run,
     theme_rc,
 )
 
@@ -26,7 +26,7 @@ TECHNIQUES = {
 }
 TABLE_MD = pathlib.Path("results/tables/technique_table.md")
 
-run = newest_complete_run(load_rows(MODEL), list(TECHNIQUES))
+run = post_run(load_rows(MODEL), list(TECHNIQUES))
 if run is None:
     missing("technique_table: no run has all five techniques without errors",
             "modal run cloud/modal_app.py --techniques " + ",".join(TECHNIQUES))
@@ -80,7 +80,7 @@ with theme_rc():
                     fontsize=FONT_SIZE, color=col,
                     fontweight="semibold" if col in (c["accent"], c["warning"]) else "normal",
                     family="monospace" if a == "left" and cx == col_x[0] else None)
-    faster = [t for t, _, _, _, x in rows if t != "native" and x > 1.05]  # >5% faster
+    faster = [t for t, _, _, _, x in rows if t != "native" and x >= 1.10]  # at least 10% faster counts
     title = ("None of these tricks made it meaningfully faster" if not faster
              else f"Only {', '.join(faster)} beat the original")
     fig.suptitle(title, x=0.01, ha="left",

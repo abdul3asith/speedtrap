@@ -7,14 +7,14 @@ from _style import (
     footnote,
     load_rows,
     missing,
-    newest_complete_run,
+    post_run,
     render_all,
 )
 
 MODEL = "smolvla"
 BASE, TEST = "native", "fp32_cast"
 
-run = newest_complete_run(load_rows(MODEL), [BASE, TEST])
+run = post_run(load_rows(MODEL), [BASE, TEST])
 if run is None:
     missing(f"fp32_vs_bf16: no run has both {BASE} and {TEST}",
             f"modal run cloud/modal_app.py --techniques {BASE},{TEST}")

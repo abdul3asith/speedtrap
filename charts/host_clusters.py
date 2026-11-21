@@ -9,11 +9,12 @@ from _style import FONT_SIZE, clean_axes, cloud_name, load_rows, missing, render
 
 MODEL = "smolvla"
 MIN_PER_GROUP = 3
+EXPERIMENT = "machines-2026-11-20"  # the 14-machine experiment in section 9
 
 # One point per run_id: each run_id is one container on one machine.
 machines: dict[str, dict] = {}
 for r in load_rows(MODEL):
-    if r["technique"] == "native":
+    if r["technique"] == "native" and r.get("experiment") == EXPERIMENT:
         machines.setdefault(r["run_id"], r)
 
 groups: dict[str, list[dict]] = {}

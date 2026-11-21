@@ -14,7 +14,10 @@ from contextlib import contextmanager
 
 import matplotlib.pyplot as plt
 
-RESULTS = pathlib.Path("results/speed")
+# results/speed: written by the harness. results/logs: older runs transcribed from terminal logs.
+RESULTS = [pathlib.Path("results/speed"), pathlib.Path("results/logs")]
+# The run that sections 1, 5 and 6 of the post describe.
+POST_RUN = "first-run"
 OUT = pathlib.Path("charts/out")
 
 THEMES = {
@@ -53,7 +56,7 @@ FOOT_SIZE = 8.5
 def load_rows(model: str | None = None) -> list[dict]:
     """Every result row without an error, optionally for one model."""
     rows = []
-    for path in sorted(RESULTS.glob("*.jsonl")):
+    for path in sorted(p for d in RESULTS for p in d.glob("*.jsonl")):
         for line in path.read_text().splitlines():
             if not line.strip():
                 continue
@@ -79,16 +82,28 @@ def newest_complete_run(rows: list[dict], techniques: list[str]) -> dict[str, di
     return max(complete, key=lambda run: run[techniques[0]]["timestamp"])
 
 
+def post_run(rows: list[dict], techniques: list[str]) -> dict[str, dict] | None:
+    """The post's run (POST_RUN) if it has all `techniques`, else the newest complete run."""
+    pinned = newest_complete_run([r for r in rows if r["run_id"] == POST_RUN], techniques)
+    return pinned or newest_complete_run(rows, techniques)
+
+
 def cloud_name(row: dict) -> str:
     return str(row.get("cloud", "unknown")).replace("CLOUD_PROVIDER_", "")
 
 
 def footnote(row: dict) -> str:
     """Where the numbers came from, built from the result row itself."""
-    return (
-        f"{row['model']}, {row['gpu']}, {cloud_name(row)} host, driver {row['gpu_driver']}, "
-        f"run {row['run_id']}. Warm-up {row['warmup']}, {row['n']} timed actions, GPU synchronized."
-    )
+    where = [row["model"], row["gpu"]]
+    if row.get("cloud"):
+        where.append(f"{cloud_name(row)} host")
+    if row.get("gpu_driver"):
+        where.append(f"driver {row['gpu_driver']}")
+    where.append(f"run {row['run_id']}")
+    text = f"{', '.join(where)}. Warm-up {row['warmup']}, {row['n']} timed actions, GPU synchronized."
+    if row.get("source"):
+        text += f" {row['source'].capitalize()}."
+    return text
 
 
 def missing(what: str, command: str, extra: str = "") -> None:
