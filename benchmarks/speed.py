@@ -6,6 +6,7 @@ import time
 import torch
 
 from .policy import act, make_observation
+from .techniques import autocast_context
 
 
 def sync(device: str) -> None:
@@ -60,3 +61,28 @@ def measure_speed(bundle: dict, n: int = 200, warmup: int = 20) -> dict:
     if device.startswith("cuda"):
         result["peak_mem_gb"] = torch.cuda.max_memory_allocated() / 1e9
     return result
+
+
+def measure_breakdown(bundle: dict, n: int = 30) -> dict:
+    """Split one action into its three stages, to see where the time goes."""
+    device = bundle["device"]
+    obs = make_observation(bundle)
+    stages = {"pre_ms": [], "model_ms": [], "post_ms": []}
+    with torch.no_grad(), autocast_context(bundle["technique"], device):
+        for _ in range(n):
+            bundle["policy"].reset()
+            sync(device)
+            t0 = time.perf_counter()
+            batch = bundle["pre"](obs)
+            sync(device)
+            t1 = time.perf_counter()
+            action = bundle["policy"].select_action(batch)
+            sync(device)
+            t2 = time.perf_counter()
+            bundle["post"](action)
+            sync(device)
+            t3 = time.perf_counter()
+            stages["pre_ms"].append((t1 - t0) * 1000)
+            stages["model_ms"].append((t2 - t1) * 1000)
+            stages["post_ms"].append((t3 - t2) * 1000)
+    return {name: statistics.median(times) for name, times in stages.items()}

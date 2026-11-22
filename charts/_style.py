@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 # results/speed: written by the harness. results/logs: older runs transcribed from terminal logs.
 RESULTS = [pathlib.Path("results/speed"), pathlib.Path("results/logs")]
 # The run that sections 1, 5 and 6 of the post describe.
-POST_RUN = "first-run"
+POST_RUN = "64d17ce0"
 OUT = pathlib.Path("charts/out")
 
 # Two element colours, as on the site: ink (near-black / off-white) for the

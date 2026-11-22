@@ -81,8 +81,6 @@ def quantize(policy, technique: Technique) -> None:
     if technique.quant == "int8":
         quantize_(policy, Int8WeightOnlyConfig())
     elif technique.quant == "int4":
-        quantize_(policy, Int4WeightOnlyConfig(group_size=128))
-    elif technique.quant == "int4":
         quantize_(
             policy,
             Int4WeightOnlyConfig(
