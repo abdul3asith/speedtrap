@@ -82,6 +82,13 @@ def quantize(policy, technique: Technique) -> None:
         quantize_(policy, Int8WeightOnlyConfig())
     elif technique.quant == "int4":
         quantize_(policy, Int4WeightOnlyConfig(group_size=128))
+    elif technique.quant == "int4":
+        quantize_(
+            policy,
+            Int4WeightOnlyConfig(
+                group_size=128, int4_packing_format="tile_packed_to_4d"
+            ),
+        )
     else:
         raise ValueError(f"unknown quant {technique.quant!r}")
 

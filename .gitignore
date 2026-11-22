@@ -29,3 +29,6 @@ dist/
 *.fls
 *.bbl
 *.blg
+
+# Generated charts (rebuild with `make charts`)
+charts/out/
