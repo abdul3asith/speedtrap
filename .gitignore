@@ -32,3 +32,4 @@ dist/
 
 # Generated charts (rebuild with `make charts`)
 charts/out/
+results/traces/

@@ -44,6 +44,7 @@ if base_first is None:
     first_labels[0] = "original*"
     foot += f" *Original first call: median of {len(others)} other runs (not logged for this run)."
 first_s = [base_first / 1000, test["first_call_ms"] / 1000]
+first_ratio = first_s[1] / first_s[0]
 
 
 def fmt_duration(seconds: float) -> str:
@@ -52,7 +53,10 @@ def fmt_duration(seconds: float) -> str:
 
 def bars(ax, c, names, values, texts, colors, title, note):
     top = max(values)
-    b = ax.bar(names, values, width=0.5, color=colors)
+    # A bar under ~2% of the tallest would be invisible on a linear scale (1.4 s next
+    # to 18.5 min is 0.1%), so draw it at a visible minimum. Its label keeps the real value.
+    shown = [max(v, top * 0.02) for v in values]
+    b = ax.bar(names, shown, width=0.5, color=colors)
     ax.set_ylim(0, top * 1.45)
     ax.set_yticks([])
     clean_axes(ax, c)
@@ -60,7 +64,7 @@ def bars(ax, c, names, values, texts, colors, title, note):
     ax.set_title(title, loc="left", fontsize=PANEL_SIZE, fontweight="semibold", color=c["primary"], pad=6)
     ax.text(0, 1.0, note, transform=ax.transAxes, ha="left", va="top",
             fontsize=SUB_SIZE, color=c["secondary"])
-    for bar, v, t in zip(b, values, texts):
+    for bar, v, t in zip(b, shown, texts):
         ax.text(bar.get_x() + bar.get_width() / 2, v + top * 0.03, t, ha="center", va="bottom",
                 fontsize=VALUE_SIZE, fontweight="semibold", color=c["primary"])
 
@@ -70,7 +74,7 @@ def draw(c):
     bars(ax1, c, labels, p50, [f"{v:.0f} ms" for v in p50], [c["baseline"], c["accent"]],
          "Time per action (p50)", f"{speedup:.1f}× faster")
     bars(ax2, c, first_labels, first_s, [fmt_duration(v) for v in first_s], [c["baseline"], c["accent"]],
-         "First call (one-time startup)", "paid once per restart")
+         "First call (one-time startup)", f"about {first_ratio:,.0f}× longer, once per restart")
     return fig
 
 
